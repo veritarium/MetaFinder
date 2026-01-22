@@ -47,33 +47,40 @@ pip3 install -r requirements.txt
 
 This installs PyExifTool, CustomTkinter, Pillow, and other libraries.
 
-### Step 2: Setup ExifTool (Automated!)
+### Step 2: You're Done! (Windows)
 
+**Windows users** - ExifTool is already included! Just run:
 ```bash
-python3 setup_exiftool.py
+python3 metafinder_gui.py
 ```
 
-**That's it!** The script will:
-- ✅ **Windows**: Download ExifTool automatically to `vendor/bin/`
-- ✅ **macOS/Linux**: Check for system installation or guide you
-- ✅ **No PATH needed** - Bundled in project folder
-- ✅ **Verify** it works
+ExifTool 13.45 (34 MB) is pre-bundled in `vendor/bin/` - no downloads, no setup, just works!
 
-**What happens:**
-- Windows users: Downloads exiftool.exe to vendor/bin/ (~14 MB)
-- macOS/Linux: Checks if already installed system-wide
-- No configuration, no PATH setup, just works!
+### Step 2: Install ExifTool (macOS/Linux Only)
 
-**Manual installation** (if needed):
+**macOS:**
 ```bash
-# macOS
 brew install exiftool
-
-# Linux
-sudo apt install libimage-exiftool-perl
-
-# Windows: The setup script handles it, or see INSTALL.md
 ```
+
+**Linux:**
+```bash
+sudo apt install libimage-exiftool-perl
+```
+
+Then run:
+```bash
+python3 metafinder_gui.py
+```
+
+---
+
+**Summary for Windows:**
+1. Clone repo
+2. `pip install -r requirements.txt`
+3. `python metafinder_gui.py`
+
+**That's it!** No ExifTool download needed - it's already there!
 
 ### Step 3: Run Tests
 

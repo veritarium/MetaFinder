@@ -1,20 +1,14 @@
 # Bundled ExifTool
 
-This folder should contain the ExifTool executable for zero-installation usage.
+ExifTool is **pre-installed** in this folder for Windows users!
 
-## 📥 Quick Setup (Windows)
+## ✅ Already Included (Windows)
 
-1. Download ExifTool:
-   - Go to: https://exiftool.org/
-   - Download: **"Windows Executable"** (exiftool-12.xx.zip)
+- ✅ `exiftool.exe` - ExifTool 13.45 launcher (57 KB)
+- ✅ `exiftool_files/` - Supporting libraries (34 MB)
+- ✅ No download needed - works immediately!
 
-2. Extract and copy:
-   - Extract the ZIP file
-   - Find: `exiftool(-k).exe`
-   - **Rename to**: `exiftool.exe`
-   - **Copy to this folder** (`vendor/bin/`)
-
-3. Done! MetaFinder will automatically use it.
+Just clone the repo and run MetaFinder. That's it!
 
 ## 🍎 macOS / 🐧 Linux
 

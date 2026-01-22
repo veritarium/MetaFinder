@@ -108,32 +108,33 @@ We have a fully functional prototype with:
 ### Installation
 
 ```bash
-# 1. Clone the repository
+# 1. Clone the repository (ExifTool included!)
 git clone https://github.com/yourusername/MetaFinder.git
 cd MetaFinder
 
 # 2. Install Python dependencies
 pip install -r requirements.txt
 
-# 3. Setup ExifTool (automated!)
-python setup_exiftool.py
+# 3. Run!
+python metafinder_gui.py
 ```
 
-**That's it!** The setup script will:
-- ✅ Download ExifTool automatically (Windows)
-- ✅ Check for system installation (macOS/Linux)
-- ✅ Place it in `vendor/bin/` - no PATH needed
-- ✅ Verify everything works
+**That's it!** ExifTool is now **pre-bundled** in the repository:
+- ✅ **Windows**: ExifTool 13.45 included in `vendor/bin/` (~34 MB)
+- ✅ **No downloads needed** - clone and run
+- ✅ **No PATH setup** - works immediately
+- ✅ **Portable** - move folder anywhere
 
-**Manual installation** (if needed):
+**macOS/Linux users:**
 ```bash
+# ExifTool not pre-bundled for your OS - install once:
 # macOS:
 brew install exiftool
 
 # Linux:
 sudo apt install libimage-exiftool-perl
 
-# Windows: Run setup_exiftool.py or manually download from https://exiftool.org/
+# Then run MetaFinder normally
 ```
 
 ### Run GUI (Recommended)

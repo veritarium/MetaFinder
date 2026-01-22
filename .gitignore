@@ -47,7 +47,5 @@ sample_data/
 dist/
 build/
 
-# Bundled executables (download separately)
-vendor/bin/exiftool
-vendor/bin/exiftool.exe
-vendor/bin/*.dll
+# Note: ExifTool is now bundled in vendor/bin/ and committed to repo
+# No need to download separately - clone and go!
