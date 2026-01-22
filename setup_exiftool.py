@@ -35,22 +35,47 @@ def download_exiftool_windows():
     print("\n📥 Downloading ExifTool for Windows...")
     print("This may take a minute (~14 MB)...\n")
 
-    # Download URL (update version as needed)
-    url = "https://exiftool.org/exiftool-12.70.zip"
+    # Try multiple URLs (latest stable versions)
+    urls = [
+        "https://exiftool.org/exiftool-12.96.zip",  # Latest as of 2024
+        "https://exiftool.org/exiftool-12.95.zip",
+        "https://exiftool.org/exiftool-12.94.zip",
+        "https://exiftool.org/exiftool-12.93.zip",
+        "https://exiftool.org/exiftool-12.92.zip",
+    ]
+
     zip_path = vendor_bin / 'exiftool.zip'
+    download_successful = False
 
     try:
-        # Download with progress
-        def download_progress(block_num, block_size, total_size):
-            downloaded = block_num * block_size
-            percent = min(100, (downloaded / total_size) * 100)
-            bar_length = 40
-            filled = int(bar_length * downloaded / total_size)
-            bar = '█' * filled + '░' * (bar_length - filled)
-            print(f'\r[{bar}] {percent:.1f}%', end='', flush=True)
+        # Try each URL until one works
+        for url in urls:
+            try:
+                print(f"Trying: {url}")
 
-        urllib.request.urlretrieve(url, zip_path, download_progress)
-        print("\n✅ Download complete!")
+                # Download with progress
+                def download_progress(block_num, block_size, total_size):
+                    downloaded = block_num * block_size
+                    percent = min(100, (downloaded / total_size) * 100)
+                    bar_length = 40
+                    filled = int(bar_length * downloaded / total_size)
+                    bar = '█' * filled + '░' * (bar_length - filled)
+                    print(f'\r[{bar}] {percent:.1f}%', end='', flush=True)
+
+                urllib.request.urlretrieve(url, zip_path, download_progress)
+                print("\n✅ Download complete!")
+                download_successful = True
+                break  # Success, exit loop
+
+            except urllib.error.HTTPError as e:
+                if e.code == 404:
+                    print(f" - Not found, trying next version...")
+                    continue
+                else:
+                    raise  # Re-raise other HTTP errors
+
+        if not download_successful:
+            raise Exception("Could not download any ExifTool version. Please download manually.")
 
         # Extract
         print("\n📦 Extracting...")
