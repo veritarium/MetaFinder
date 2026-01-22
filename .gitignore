@@ -46,3 +46,8 @@ sample_data/
 # Build artifacts
 dist/
 build/
+
+# Bundled executables (download separately)
+vendor/bin/exiftool
+vendor/bin/exiftool.exe
+vendor/bin/*.dll

@@ -38,42 +38,42 @@ We've built a complete working prototype with both CLI and GUI interfaces:
 
 ## 🚀 How to Test on Your Machine
 
-### Step 1: Install ExifTool
-
-This is the only external dependency you need.
-
-**macOS:**
-```bash
-brew install exiftool
-```
-
-**Linux (Ubuntu/Debian):**
-```bash
-sudo apt install libimage-exiftool-perl
-```
-
-**Windows:**
-1. Download from https://exiftool.org/
-2. Extract and add to PATH
-
-**Verify installation:**
-```bash
-exiftool -ver
-```
-Should show version 12.15 or higher.
-
-### Step 2: Install Python Dependencies
+### Step 1: Install Python Dependencies
 
 ```bash
 cd MetaFinder
 pip3 install -r requirements.txt
 ```
 
-This installs:
-- PyExifTool (metadata extraction)
-- CustomTkinter (GUI framework)
-- Pillow (image processing)
-- Other supporting libraries
+This installs PyExifTool, CustomTkinter, Pillow, and other libraries.
+
+### Step 2: Setup ExifTool (Automated!)
+
+```bash
+python3 setup_exiftool.py
+```
+
+**That's it!** The script will:
+- ✅ **Windows**: Download ExifTool automatically to `vendor/bin/`
+- ✅ **macOS/Linux**: Check for system installation or guide you
+- ✅ **No PATH needed** - Bundled in project folder
+- ✅ **Verify** it works
+
+**What happens:**
+- Windows users: Downloads exiftool.exe to vendor/bin/ (~14 MB)
+- macOS/Linux: Checks if already installed system-wide
+- No configuration, no PATH setup, just works!
+
+**Manual installation** (if needed):
+```bash
+# macOS
+brew install exiftool
+
+# Linux
+sudo apt install libimage-exiftool-perl
+
+# Windows: The setup script handles it, or see INSTALL.md
+```
 
 ### Step 3: Run Tests
 

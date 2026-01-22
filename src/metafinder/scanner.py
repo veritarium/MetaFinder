@@ -40,13 +40,35 @@ class MetadataScanner:
 
         self.db = db_manager or DatabaseManager()
         self.normalizer = MetadataNormalizer()
+        self.exiftool_path = self._find_exiftool()
         self._verify_exiftool()
 
+    def _find_exiftool(self) -> str:
+        """
+        Find ExifTool binary, checking bundled version first
+
+        Returns:
+            Path to exiftool executable
+        """
+        # Check bundled version first (in vendor/bin/)
+        bundled_paths = [
+            Path(__file__).parent.parent.parent / 'vendor' / 'bin' / 'exiftool.exe',  # Windows
+            Path(__file__).parent.parent.parent / 'vendor' / 'bin' / 'exiftool',      # Unix
+        ]
+
+        for path in bundled_paths:
+            if path.exists():
+                print(f"✅ Using bundled ExifTool: {path}")
+                return str(path)
+
+        # Fall back to system PATH
+        return 'exiftool'
+
     def _verify_exiftool(self):
-        """Verify ExifTool binary is installed"""
+        """Verify ExifTool binary is installed and working"""
         try:
             result = subprocess.run(
-                ['exiftool', '-ver'],
+                [self.exiftool_path, '-ver'],
                 capture_output=True,
                 text=True,
                 timeout=5
@@ -54,9 +76,14 @@ class MetadataScanner:
             version = float(result.stdout.strip())
             if version < 12.15:
                 print(f"⚠️  Warning: ExifTool {version} is older than recommended (12.15+)")
+            else:
+                print(f"✅ ExifTool {version} ready")
         except FileNotFoundError:
             raise RuntimeError(
-                "ExifTool binary not found. Install from: https://exiftool.org/\n"
+                "ExifTool binary not found!\n\n"
+                "Quick fix: Place exiftool.exe in vendor/bin/ folder\n"
+                "Download from: https://exiftool.org/\n\n"
+                "Or install system-wide:\n"
                 "  - Windows: Download and add to PATH\n"
                 "  - macOS: brew install exiftool\n"
                 "  - Linux: apt install libimage-exiftool-perl"
@@ -104,7 +131,7 @@ class MetadataScanner:
         failed = 0
 
         try:
-            with exiftool.ExifToolHelper() as et:
+            with exiftool.ExifToolHelper(executable=self.exiftool_path) as et:
                 for i in range(0, total_files, batch_size):
                     batch = files[i:i + batch_size]
                     batch_paths = [str(f) for f in batch]
@@ -166,7 +193,7 @@ class MetadataScanner:
             raise ValueError(f"Invalid file path: {file_path}")
 
         try:
-            with exiftool.ExifToolHelper() as et:
+            with exiftool.ExifToolHelper(executable=self.exiftool_path) as et:
                 metadata_list = et.get_metadata([str(path)])
                 if metadata_list:
                     return self.normalizer.normalize_exiftool_output(metadata_list[0])
@@ -253,7 +280,7 @@ class MetadataScanner:
         batch_size = 100
 
         try:
-            with exiftool.ExifToolHelper() as et:
+            with exiftool.ExifToolHelper(executable=self.exiftool_path) as et:
                 for i in range(0, total_files, batch_size):
                     batch = files[i:i + batch_size]
                     batch_paths = [str(f) for f in batch]
