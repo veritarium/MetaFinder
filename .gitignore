@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+*.manifest
+*.spec
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# MetaFinder specific
+catalog.db
+catalog.db-journal
+*.db
+*.db-journal
+thumbnails/
+cache/
+
+# Logs
+*.log
+
+# Test data
+test_files/
+sample_data/
+
+# Build artifacts
+dist/
+build/
