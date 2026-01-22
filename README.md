@@ -96,23 +96,55 @@ Find files you never could before:
 
 ## 🚀 Quick Start
 
-### Option 1: Download Executable (Coming Soon)
-1. Download `MetaFinder.exe` from [Releases](https://github.com/veritarium/MetaFinder/releases)
-2. Run it - no installation needed!
-3. Point it to your folder and click Scan
+### Status: **Working Prototype Available!** ✅
 
-### Option 2: Build from Source
+We have a fully functional prototype with:
+- ✅ CLI interface (scan, search, stats)
+- ✅ GUI interface (modern CustomTkinter design)
+- ✅ PyExifTool integration (1000+ file formats)
+- ✅ SQLite database with fast queries
+- ✅ All tests passing
+
+### Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/veritarium/MetaFinder.git
+git clone https://github.com/yourusername/MetaFinder.git
 cd MetaFinder
 
-# Install dependencies
-pip install -r requirements.txt
+# Install ExifTool binary
+# macOS:
+brew install exiftool
 
-# Run
-python metafinder.py
+# Linux:
+sudo apt install libimage-exiftool-perl
+
+# Windows: Download from https://exiftool.org/
+
+# Install Python dependencies
+pip install -r requirements.txt
+```
+
+### Run GUI (Recommended)
+
+```bash
+python3 metafinder_gui.py
+```
+
+### Run CLI
+
+```bash
+# Scan a folder
+python3 metafinder_cli.py scan ~/Pictures
+
+# Search for files
+python3 metafinder_cli.py search --type image --camera Canon
+
+# View statistics
+python3 metafinder_cli.py stats
+
+# Get file info
+python3 metafinder_cli.py info ~/Pictures/photo.jpg
 ```
 
 ## 📖 How to Use
@@ -215,30 +247,46 @@ python metafinder.py
 
 ## 🗺️ Roadmap
 
-### v1.0 - Core Features (Current)
+### v0.1 - Prototype (✅ COMPLETE)
 - [x] Project brainstorm and planning
-- [ ] Scanner engine with 7+ extractors
-- [ ] SQLite database with FTS5
-- [ ] Basic filter UI
-- [ ] Image, document, audio metadata extraction
+- [x] Research open source solutions (PyExifTool selected)
+- [x] Scanner engine with PyExifTool (1000+ formats)
+- [x] SQLite database with FTS5
+- [x] CLI interface (scan, search, stats, info)
+- [x] GUI interface (CustomTkinter)
+- [x] Metadata extraction for all file types
+- [x] Filter panel with dynamic filters
+- [x] Results display with file cards
+- [x] Statistics dashboard
+- [x] All tests passing (100%)
 
-### v1.1 - Enhanced Filtering
-- [ ] Advanced filters (GPS, BPM, author)
-- [ ] Saved queries
+### v1.0 - Production Release (In Progress)
+- [ ] Test with real user files
+- [ ] Thumbnail preview for images
+- [ ] Date range picker
+- [ ] Saved filter presets
 - [ ] Export results (CSV, JSON)
-- [ ] Video and executable metadata
+- [ ] Keyboard shortcuts
+- [ ] Error recovery
+- [ ] User documentation
 
-### v1.2 - Polish & Performance
-- [ ] Incremental rescan
+### v1.1 - Enhanced Features
+- [ ] Incremental rescan (only changed files)
 - [ ] Background indexing
 - [ ] Thumbnail cache
-- [ ] Error handling
+- [ ] Duplicate detection (hash-based)
+- [ ] Batch file operations
+- [ ] Advanced query builder
+- [ ] Multiple database catalogs
 
 ### v2.0 - Advanced Features
-- [ ] Multiple catalogs
-- [ ] Cloud storage support
-- [ ] Network shares
+- [ ] Cloud storage support (Google Drive, Dropbox)
+- [ ] Network share scanning
 - [ ] Smart collections
+- [ ] Tag management
+- [ ] Plugin system for custom extractors
+- [ ] API for external tools
+- [ ] Mobile app for browsing catalogs
 
 ## 🤝 Contributing
 
