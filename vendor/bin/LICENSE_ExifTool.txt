@@ -1,0 +1,75 @@
+ExifTool License
+================
+
+ExifTool is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself.
+
+This means ExifTool is dual-licensed under:
+  1. The Perl Artistic License
+  2. The GNU General Public License (GPL)
+
+You may choose either license.
+
+Copyright
+=========
+
+ExifTool is copyright 2003-2024, Phil Harvey
+
+Author: Phil Harvey (philharvey66 at gmail.com)
+Website: https://exiftool.org/
+
+Perl Artistic License
+=====================
+
+The Artistic License is available at:
+https://dev.perl.org/licenses/artistic.html
+
+Key points:
+- You may distribute verbatim copies
+- You may aggregate with other software
+- You must not charge for this package itself (though you may charge for
+  distribution or for a larger package)
+- You must not claim this is your own work
+- Attribution to the author must be maintained
+
+GNU General Public License
+===========================
+
+The GNU General Public License is available at:
+https://www.gnu.org/licenses/gpl-3.0.html
+
+ExifTool may also be used under the terms of the GPL v1 or later.
+
+Bundling Notice
+===============
+
+This copy of ExifTool is bundled with MetaFinder for convenience.
+
+ExifTool is a separate work by Phil Harvey and is not part of MetaFinder.
+MetaFinder uses ExifTool as an external tool for metadata extraction.
+
+For the latest version of ExifTool, visit: https://exiftool.org/
+
+Source Code
+===========
+
+ExifTool source code is available at:
+- https://exiftool.org/
+- https://github.com/exiftool/exiftool
+
+Installation
+============
+
+This Windows executable is the official distribution from exiftool.org.
+No modifications have been made to the ExifTool binary.
+
+Support
+=======
+
+For ExifTool support:
+- Forum: https://exiftool.org/forum/
+- Documentation: https://exiftool.org/exiftool_pod.html
+- Author: Phil Harvey
+
+For MetaFinder support:
+- See MetaFinder documentation

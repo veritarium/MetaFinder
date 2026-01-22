@@ -314,6 +314,10 @@ MIT License - See [LICENSE](LICENSE) for details
 
 ## 🙏 Acknowledgments
 
+**Powered by**:
+- **[ExifTool](https://exiftool.org/)** by Phil Harvey - Industry-standard metadata extraction (Perl Artistic License)
+- **[PyExifTool](https://github.com/sylikc/pyexiftool)** - Python wrapper for ExifTool
+
 **Inspired by**:
 - iTunes (music library organization)
 - Everything by voidtools (fast file search)
@@ -321,9 +325,13 @@ MIT License - See [LICENSE](LICENSE) for details
 
 **Built with**:
 - Python 3.11+
-- CustomTkinter (modern UI)
-- SQLite (database)
-- Pillow, PyPDF2, mutagen, pefile (extractors)
+- [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter) - Modern UI framework
+- SQLite - Fast database with FTS5
+- Pillow - Image processing
+
+**Special Thanks**:
+- Phil Harvey for creating and maintaining ExifTool for 20+ years
+- The open source community for excellent Python libraries
 
 ## 💬 Support
 
