@@ -254,47 +254,302 @@ Files → Scanner → Extractors → Normalizer → Database
 6. **Batch Operations**: Select multiple files
 7. **Export**: Save results to CSV/JSON
 
-## 🔧 Technical Implementation
+## 🔍 Open Source Research & Analysis
+
+### GitHub Projects Evaluated
+
+We researched existing open source metadata extraction projects to avoid reinventing the wheel. Here's what we found:
+
+#### 1. **PyExifTool** (sylikc/pyexiftool) ⭐ **TOP CHOICE**
+**Status**: Active, maintained, 100+ stars
+**Language**: Python wrapper for ExifTool
+**GitHub**: https://github.com/sylikc/pyexiftool
+
+**Architecture Highlights**:
+- **Persistent Process Model**: Uses ExifTool's `-stay_open` flag to maintain a single process
+- **Batch Processing**: Process multiple files without subprocess overhead
+- **Performance**: 10-100x faster than spawning subprocess per file
+- **Layered Design**:
+  - `ExifTool` (base class) - stable core API
+  - `ExifToolHelper` (recommended) - convenience methods
+  - `ExifToolAlpha` (experimental) - community features
+
+**API Example**:
+```python
+import exiftool
+files = ["a.jpg", "b.png", "c.tif"]
+with exiftool.ExifToolHelper() as et:
+    metadata = et.get_metadata(files)
+```
+
+**Pros**:
+- ✅ Supports 1000+ file formats (images, videos, audio, PDFs, etc.)
+- ✅ Battle-tested (ExifTool is the industry standard)
+- ✅ Excellent performance via persistent process
+- ✅ Rich metadata extraction (EXIF, IPTC, XMP, GPS, etc.)
+- ✅ Actively maintained (last update 2024)
+
+**Cons**:
+- ⚠️ Requires ExifTool binary installed
+- ⚠️ No built-in filtering (we'd add this layer)
+
+**Verdict**: **PERFECT BASE** - Handles heavy lifting of metadata extraction across all file types
+
+---
+
+#### 2. **metadata-cleaner** (sandy-sp/metadata-cleaner)
+**Status**: Active development
+**Language**: Python (97.3%)
+**GitHub**: https://github.com/sandy-sp/metadata-cleaner
+
+**Core Features**:
+- **Three Operations**: View, Remove, Selective Filter
+- **Batch Processing**: Parallel execution for speed
+- **Recursive Scanning**: Process entire directory trees
+- **Supported Formats**: Images (JPG, PNG, TIFF, WEBP), Documents (PDF, DOCX, TXT), Audio (MP3, WAV, FLAC), Video (MP4, MKV, AVI)
+- **Lossless Video**: Preserves streams via copy (no re-encoding)
+
+**Architecture**:
+- Poetry for dependency management
+- Cross-platform (Windows, macOS, Linux)
+- Docker containerization available
+- Detailed logging with debug support
+- Dry-run mode for safety
+
+**Pros**:
+- ✅ Already has filtering/removal capabilities
+- ✅ Batch processing infrastructure
+- ✅ Good error handling and logging
+- ✅ Modern Python tooling (Poetry)
+
+**Cons**:
+- ⚠️ Focused on removal, not viewing/organizing
+- ⚠️ Limited file format support vs ExifTool
+
+**Verdict**: **GOOD REFERENCE** - We can borrow batch processing patterns and filtering architecture
+
+---
+
+#### 3. **Hachoir** (vstinner/hachoir)
+**Status**: Mature, maintained
+**Language**: Python
+**GitHub**: https://github.com/vstinner/hachoir
+
+**Core Approach**:
+- **Binary Stream Parser**: Views/edits binary files field-by-field
+- **Comprehensive**: 30+ formats including images, audio, video, archives
+- **Filtering Support**: Can set priorities to metadata values
+- **Standalone**: No external dependencies (pure Python parsing)
+
+**Pros**:
+- ✅ Pure Python (no external binaries needed)
+- ✅ Built-in filtering capabilities
+- ✅ Detailed technical metadata extraction
+- ✅ Python 3.6+ support
+
+**Cons**:
+- ⚠️ Slower than ExifTool (Python vs C)
+- ⚠️ Less comprehensive format support
+- ⚠️ Requires more code per file type
+
+**Verdict**: **ALTERNATIVE OPTION** - Good for pure-Python solution, but PyExifTool is faster
+
+---
+
+#### 4. **extruct** (scrapinghub/extruct)
+**Status**: Mature, production-ready
+**Language**: Python
+**GitHub**: https://github.com/scrapinghub/extruct
+
+**Specialized For**: HTML/Web metadata extraction
+
+**Supported Formats**:
+- W3C HTML Microdata (schema.org)
+- JSON-LD
+- Microformats (via mf2py)
+- Open Graph (Facebook)
+- RDFa (experimental)
+- Dublin Core
+
+**API**:
+```python
+import extruct
+data = extruct.extract(html_string, base_url=url)
+# Returns: {'microdata': [...], 'json-ld': [...], ...}
+```
+
+**Pros**:
+- ✅ Best-in-class for HTML metadata
+- ✅ Unified API across metadata types
+- ✅ Production-tested (Scrapinghub)
+
+**Cons**:
+- ⚠️ HTML only (not for our file types)
+
+**Verdict**: **NOT APPLICABLE** - We're focusing on local files, not web scraping
+
+---
+
+#### 5. **nekros1xx/metadata-extractor**
+**Status**: Early stage (3 commits)
+**Language**: Python
+**GitHub**: https://github.com/nekros1xx/metadata-extractor
+
+**Features**:
+- Images (JPEG, PNG)
+- PDFs
+- Word Documents (.docx)
+- Audio (MP3, MP4)
+
+**Pros**:
+- ✅ Simple, focused implementation
+
+**Cons**:
+- ⚠️ Limited file format coverage
+- ⚠️ No batch processing
+- ⚠️ Minimal documentation
+- ⚠️ Early development stage
+
+**Verdict**: **TOO LIMITED** - Better to use mature libraries
+
+---
+
+### Industry Standard Tools (Non-Python)
+
+#### **ExifTool** (Perl)
+- The gold standard for metadata extraction
+- 20+ years of development
+- 1000+ file formats
+- Command-line interface
+- Used by professionals worldwide
+
+#### **Apache Tika** (Java)
+- Enterprise-grade extraction
+- 1000+ file formats
+- Content detection
+- Apache 2.0 license
+- Heavy (JVM required)
+
+---
+
+## 🎯 Recommended Architecture
+
+### **Base Layer: PyExifTool + Custom Filtering**
+
+Based on research, here's the optimal tech stack:
+
+```
+┌─────────────────────────────────────────┐
+│         MetaFinder Application          │
+├─────────────────────────────────────────┤
+│  Custom Filtering & Query Engine        │  ← Our innovation
+│  (Smart filters, saved queries, UI)     │
+├─────────────────────────────────────────┤
+│  Metadata Extraction Layer              │
+│  • PyExifTool (primary - all formats)   │  ← Proven, fast
+│  • python-docx (enhanced Word parsing)  │  ← Supplementary
+│  • openpyxl (Excel analysis)            │  ← Supplementary
+├─────────────────────────────────────────┤
+│  SQLite Database with FTS5              │  ← Query optimization
+├─────────────────────────────────────────┤
+│  Beautiful CustomTkinter UI             │  ← Modern interface
+└─────────────────────────────────────────┘
+```
+
+### Why PyExifTool as Base?
+
+1. **Comprehensive Coverage**: 1000+ formats vs building 7+ extractors manually
+2. **Performance**: Persistent process = 10-100x faster than subprocess per file
+3. **Battle-Tested**: Industry standard with 20+ years of development
+4. **Maintenance**: We focus on UI/filtering, not format parsing
+5. **Future-Proof**: New format support comes from ExifTool updates
+
+### Our Value-Add (Where We Innovate)
+
+We're **NOT** building another metadata extractor. We're building:
+
+1. **Smart Filtering System**: Multi-dimensional filtering that ExifTool doesn't have
+2. **Beautiful UI**: Modern, intuitive interface vs command-line
+3. **Query Engine**: SQLite-powered instant search across metadata
+4. **User Experience**: Saved queries, batch operations, export options
+5. **Integration**: Seamless workflow from scan → filter → find → open
+
+### Updated Dependencies
+
+**Core**:
+```python
+pyexiftool==0.5.6  # Metadata extraction (replaces 5+ libraries)
+sqlite3            # Built-in (database)
+customtkinter      # Modern UI
+```
+
+**Supplementary**:
+```python
+python-docx        # Enhanced Word metadata
+openpyxl          # Excel workbook analysis
+Pillow            # Thumbnail generation
+geopy             # GPS → location name
+```
+
+**Performance Gains**:
+- **Before**: 7 different libraries, each with overhead
+- **After**: 1 unified interface (PyExifTool) for all formats
+- **Speed**: 10-100x faster due to persistent process
+- **Maintenance**: ExifTool handles format updates
+
+---
+
+## 🔧 Technical Implementation (UPDATED)
 
 ### Phase 1: Scanner Engine (Week 1)
-**Goal**: Extract all metadata from common file types
+**Goal**: Extract all metadata using PyExifTool
 
-#### Extractors to Build:
-1. **ImageExtractor** (Pillow, exifread)
-   - EXIF data from JPEG/PNG
-   - GPS coordinates with geocoding
-   - Color analysis
-   - Thumbnail generation
+#### Architecture:
 
-2. **DocumentExtractor** (PyPDF2, python-docx, openpyxl)
-   - PDF metadata and text
-   - Word/Excel/PowerPoint properties
-   - Page/word counts
+```python
+class MetadataScanner:
+    """Unified scanner using PyExifTool"""
 
-3. **AudioExtractor** (mutagen)
-   - ID3 tags from MP3/FLAC/M4A
-   - Technical properties
-   - BPM detection (optional)
+    def __init__(self):
+        self.exiftool = exiftool.ExifToolHelper()
 
-4. **VideoExtractor** (ffmpeg-python)
-   - Container and codec info
-   - Resolution, FPS, duration
-   - Audio tracks
+    def scan_folder(self, path: str, recursive: bool = True):
+        """Scan folder using PyExifTool batch processing"""
+        files = self._discover_files(path, recursive)
 
-5. **ExecutableExtractor** (pefile)
-   - Version information
-   - Digital signatures
-   - Architecture
+        # PyExifTool handles all formats in one call!
+        with self.exiftool as et:
+            metadata_list = et.get_metadata(files)
 
-6. **ArchiveExtractor** (zipfile, rarfile, py7zr)
-   - Contents list
-   - Compression stats
-   - Encryption status
+        return self._normalize_and_store(metadata_list)
 
-7. **CodeExtractor** (pygments)
-   - Language detection
-   - Line/function counts
-   - Complexity metrics
+    def _normalize_and_store(self, metadata_list):
+        """Convert ExifTool output to our schema"""
+        for metadata in metadata_list:
+            file_record = self._parse_exiftool_output(metadata)
+            self.db.insert(file_record)
+```
+
+#### Extractors to Build (SIMPLIFIED):
+
+1. **UnifiedExtractor** (PyExifTool wrapper)
+   - Handles ALL file types via ExifTool
+   - Batch processing with persistent process
+   - ~1000+ formats supported out-of-box
+
+2. **MetadataNormalizer**
+   - Convert ExifTool output to our schema
+   - Create searchable text fields
+   - Extract common fields for indexing
+
+3. **ThumbnailGenerator** (Pillow)
+   - Generate thumbnails for images/videos
+   - Cache for fast display
+
+4. **EnhancedParsers** (Optional, for specific needs)
+   - `python-docx` for Word internal structure
+   - `openpyxl` for Excel formulas/charts
+   - Only used when we need MORE than ExifTool provides
 
 #### Database Schema:
 ```sql
@@ -369,6 +624,134 @@ CREATE INDEX idx_author ON files(author);
   }
 }
 ```
+
+---
+
+### 📊 Comparison Table: Build vs Use Existing
+
+| Aspect | Build from Scratch | Use PyExifTool |
+|--------|-------------------|----------------|
+| **Development Time** | 3-4 weeks | 1-2 days |
+| **File Format Support** | ~20 formats | 1000+ formats |
+| **Maintenance Burden** | High (all formats on us) | Low (ExifTool maintained) |
+| **Performance** | Slower (Python parsing) | Fast (C binary + persistent process) |
+| **Format Updates** | Manual implementation | Automatic (ExifTool updates) |
+| **Code Complexity** | 5000+ lines | 500 lines |
+| **Testing Effort** | Extensive per format | Wrapper testing only |
+| **Edge Cases** | We handle all | ExifTool handles all |
+| **Focus Time** | 80% extraction, 20% UI | 20% extraction, 80% UI |
+
+**Decision**: Use PyExifTool and focus on building great filtering/UI
+
+---
+
+### 🎨 Architecture Patterns from Research
+
+#### Batch Processing (from metadata-cleaner)
+```python
+class BatchProcessor:
+    """Parallel file processing with progress tracking"""
+
+    def __init__(self, workers: int = 4):
+        self.workers = workers
+        self.executor = ThreadPoolExecutor(max_workers=workers)
+
+    def process_batch(self, files: List[str], callback):
+        futures = []
+        for file in files:
+            future = self.executor.submit(callback, file)
+            futures.append(future)
+
+        # Track progress
+        for i, future in enumerate(as_completed(futures)):
+            result = future.result()
+            yield i, len(files), result
+```
+
+#### Persistent Process Pattern (from PyExifTool)
+```python
+# Instead of this (slow):
+for file in files:
+    subprocess.run(['exiftool', file])  # Process spawn overhead
+
+# Do this (fast):
+with exiftool.ExifToolHelper() as et:
+    metadata = et.get_metadata(files)  # Single process, batch operation
+```
+
+#### Filtering Architecture (inspired by metadata-cleaner)
+```python
+class MetadataFilter:
+    """Selective field filtering"""
+
+    def __init__(self, keep_fields: List[str] = None, remove_fields: List[str] = None):
+        self.keep = keep_fields
+        self.remove = remove_fields
+
+    def apply(self, metadata: dict) -> dict:
+        if self.keep:
+            return {k: v for k, v in metadata.items() if k in self.keep}
+        if self.remove:
+            return {k: v for k, v in metadata.items() if k not in self.remove}
+        return metadata
+```
+
+---
+
+### 🚀 Performance Benchmarks (Expected)
+
+Based on PyExifTool performance characteristics:
+
+| Operation | Original Plan | With PyExifTool | Improvement |
+|-----------|---------------|-----------------|-------------|
+| **Scan 60k images** | 10-15 minutes | 5-8 minutes | 2x faster |
+| **Memory Usage** | 500 MB (multiple libraries) | 200 MB (unified) | 60% reduction |
+| **Code Maintenance** | High (7 extractors) | Low (1 wrapper) | 85% less code |
+| **Format Coverage** | 20 formats | 1000+ formats | 50x more |
+| **New Format Support** | Days-weeks | Minutes (update ExifTool) | 1000x faster |
+
+---
+
+### 📦 Updated Dependencies & Installation
+
+#### Core Dependencies:
+```toml
+[tool.poetry.dependencies]
+python = "^3.8"
+pyexiftool = "^0.5.6"  # THE KEY ADDITION
+customtkinter = "^5.2.0"
+Pillow = "^10.0.0"
+geopy = "^2.4.0"
+
+# Optional enhancements
+python-docx = "^1.0.0"  # For enhanced Word parsing
+openpyxl = "^3.1.0"     # For Excel internals
+```
+
+#### System Requirements:
+```bash
+# Install ExifTool binary (one-time)
+# Windows: Download from exiftool.org
+# macOS: brew install exiftool
+# Linux: apt install libimage-exiftool-perl
+```
+
+#### Installation Script:
+```python
+def check_exiftool_installed():
+    """Verify ExifTool is available"""
+    try:
+        result = subprocess.run(['exiftool', '-ver'],
+                              capture_output=True, text=True)
+        version = float(result.stdout.strip())
+        if version >= 12.15:
+            return True
+        raise Exception(f"ExifTool {version} too old. Need 12.15+")
+    except FileNotFoundError:
+        raise Exception("ExifTool not installed. See: exiftool.org")
+```
+
+---
 
 ### Phase 2: Database Layer (Week 1)
 **Goal**: Fast, flexible querying
@@ -577,10 +960,12 @@ config.json       -- App settings
 
 ### Immediate (This Session):
 1. ✅ Create brainstorm document
-2. ⏳ Create GitHub repository
-3. ⏳ Design database schema
-4. ⏳ Prototype Scanner Engine
-5. ⏳ Create basic UI wireframe
+2. ✅ Research open source solutions
+3. ✅ Evaluate GitHub projects (PyExifTool, Hachoir, metadata-cleaner, etc.)
+4. ✅ Update architecture based on research
+5. ⏳ Design database schema
+6. ⏳ Prototype Scanner Engine (using PyExifTool)
+7. ⏳ Create basic UI wireframe
 
 ### Week 1:
 1. Implement core extractors (Image, Document, Audio)
@@ -602,6 +987,85 @@ config.json       -- App settings
 
 ---
 
+## 📚 Research Conclusions & Key Insights
+
+### What We Learned:
+
+1. **Don't Reinvent the Wheel**: ExifTool (via PyExifTool) has solved 95% of metadata extraction
+   - 20+ years of development
+   - 1000+ file formats
+   - Battle-tested by professionals
+   - Active maintenance
+
+2. **Focus on Innovation**: Our unique value is in the **filtering layer**, not extraction
+   - No one has built a beautiful, iTunes-like metadata filter for files
+   - ExifTool extracts, we make it searchable and accessible
+   - UI/UX is our differentiator
+
+3. **Performance Matters**: Persistent process architecture is crucial
+   - metadata-cleaner showed importance of batch processing
+   - PyExifTool's `-stay_open` flag = 10-100x speedup
+   - Parallel processing for large folders
+
+4. **Architecture Patterns Work**: Learn from successful projects
+   - Batch processing from metadata-cleaner
+   - Persistent process from PyExifTool
+   - Filtering concepts from Hachoir
+
+### Strategic Decision:
+
+**Build LESS, Deliver MORE**
+- ❌ Don't build 7 custom extractors
+- ✅ Use PyExifTool for extraction
+- ✅ Build amazing filtering UI
+- ✅ Focus on user experience
+- ✅ Ship faster, iterate faster
+
+### Risk Mitigation:
+
+**Dependency on ExifTool**:
+- ✅ ExifTool is stable (20+ years)
+- ✅ Open source (Perl, no licensing issues)
+- ✅ Cross-platform
+- ✅ Can bundle with application
+- ✅ Fallback: Hachoir for pure-Python option
+
+### Updated Timeline:
+
+| Phase | Original Estimate | New Estimate | Reason |
+|-------|------------------|--------------|--------|
+| Scanner Engine | 1 week | 2 days | PyExifTool handles it |
+| Database Layer | 1 week | 1 week | No change |
+| Filter UI | 2 weeks | 2 weeks | Our core focus |
+| **Total** | **4 weeks** | **3 weeks** | 25% faster |
+
+### Code Complexity Reduction:
+
+```
+Original Plan:
+├── ImageExtractor: ~500 lines
+├── DocumentExtractor: ~400 lines
+├── AudioExtractor: ~300 lines
+├── VideoExtractor: ~400 lines
+├── ExecutableExtractor: ~300 lines
+├── ArchiveExtractor: ~200 lines
+└── CodeExtractor: ~300 lines
+Total: ~2,400 lines just for extraction
+
+With PyExifTool:
+├── MetadataScanner: ~200 lines (wrapper + normalization)
+└── ThumbnailGenerator: ~100 lines
+Total: ~300 lines for extraction (8x reduction!)
+
+Focus instead on:
+├── FilterEngine: ~800 lines (our innovation)
+├── QueryBuilder: ~400 lines (smart queries)
+└── UI: ~1,500 lines (beautiful interface)
+Total: ~2,700 lines on features users see
+```
+
+---
+
 ## 🎉 Project Name: MetaFinder
 
 **Tagline**: "Find Any File, Filter by Everything"
@@ -610,6 +1074,31 @@ config.json       -- App settings
 
 **Vision**: The universal file finder that knows everything about your files and helps you find exactly what you need in seconds.
 
+**Philosophy**: Stand on the shoulders of giants (ExifTool), build what doesn't exist (intuitive filtering UI).
+
+---
+
+## 🔗 Sources & References
+
+### GitHub Projects:
+- [sylikc/pyexiftool](https://github.com/sylikc/pyexiftool) - Active Python wrapper for ExifTool
+- [sandy-sp/metadata-cleaner](https://github.com/sandy-sp/metadata-cleaner) - Metadata removal with filtering
+- [vstinner/hachoir](https://github.com/vstinner/hachoir) - Binary stream parser
+- [scrapinghub/extruct](https://github.com/scrapinghub/extruct) - HTML metadata extraction
+- [nekros1xx/metadata-extractor](https://github.com/nekros1xx/metadata-extractor) - Simple Python extractor
+
+### Documentation:
+- [PyExifTool Documentation](https://sylikc.github.io/pyexiftool/)
+- [ExifTool Official Site](https://exiftool.org/)
+- [Hachoir Documentation](https://hachoir.readthedocs.io/)
+
+### Related Tools:
+- [ExifTool](https://exiftool.org/) - The industry standard (Perl)
+- [Apache Tika](https://tika.apache.org/) - Enterprise metadata extraction (Java)
+- [FITS](https://github.com/harvard-lts/fits) - File Information Tool Set
+
 ---
 
 **Ready to Build! 🚀**
+
+**Next Step**: Install PyExifTool and build a prototype scanner to validate our architecture.

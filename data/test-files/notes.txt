@@ -1,0 +1,17 @@
+MetaFinder Test Notes
+=====================
+
+This is a test text file for the MetaFinder prototype.
+
+Created: 2024-01-15
+Author: MetaFinder Team
+Project: File Metadata Extraction System
+
+The goal is to scan files and extract their metadata using PyExifTool,
+then store it in a SQLite database for fast searching and filtering.
+
+Key Features:
+- Support for 1000+ file formats
+- Fast batch processing
+- Rich metadata extraction
+- Advanced filtering capabilities
